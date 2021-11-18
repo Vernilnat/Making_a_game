@@ -1,5 +1,6 @@
 import pygame
 import random
+import constants
 
 
 WIDTH, HEIGHT = 512, 512
@@ -19,26 +20,35 @@ def drawblock(x, y):
     num = random.choice((2, 4))
     x = (x - 1) * 128
     y = (y - 1) * 128
-    pygame.draw.rect(window, BLUE, pygame.Rect(x, y, 128, 128))
+    pygame.draw.rect(window, constants.BLUE, pygame.Rect(x, y, 128, 128))
+    text = font.render(str(num), True, constants.BLACK)
+    text_rect = text.get_rect()
+    text_rect.center = (x + 64, y + 64)
+    window.blit(text, text_rect)
 
 
+def newblock():
+    enumerate
+
+
+newblock()
 def main():
     while True:
-        window.fill(BG_COL)
+        window.fill(constants.BG_COL)
         drawblock(4, 2)
-        drawblock(2, 3)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
         pygame.display.update()
+        pygame.time.Clock().tick(constants.FPS)
 
 
-
-
+'''
 if __name__ == "__main__":
     pygame.init()
-    window = pygame.display.set_mode((WIDTH, HEIGHT))
+    window = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
     pygame.display.set_caption("2048 av Verner Lindskog")
     icon = pygame.image.load("imgs/2048_logo.png")
     pygame.display.set_icon(icon)
     main()
+'''
