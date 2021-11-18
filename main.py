@@ -2,22 +2,18 @@ import pygame
 import random
 import constants
 
+positions = {
+    (1, 1): 0, (2, 1): 0, (3, 4): 0, (4, 4): 0,
+    (1, 2): 0, (2, 2): 0, (3, 3): 0, (4, 3): 0,
+    (1, 3): 0, (2, 3): 0, (3, 2): 0, (4, 2): 0,
+    (1, 4): 0, (2, 4): 0, (3, 1): 0, (4, 1): 0
+}
 
-WIDTH, HEIGHT = 512, 512
-BG_COL = (128, 152, 183)
-BLUE = (0, 0, 128)
-positions = [
-    {(1, 4): None, (2, 4): None, (3, 4): None, (4, 4): None},
-    {(1, 3): None, (2, 3): None, (3, 3): None, (4, 3): None},
-    {(1, 2): None, (2, 2): None, (3, 2): None, (4, 2): None},
-    {(1, 1): None, (2, 1): None, (3, 1): None, (4, 1): None}
-]
 pygame.font.init()
 font = pygame.font.SysFont("Calibri", 42)
 
 
-def drawblock(x, y):
-    num = random.choice((2, 4))
+def drawblock(x, y, num):
     x = (x - 1) * 128
     y = (y - 1) * 128
     pygame.draw.rect(window, constants.BLUE, pygame.Rect(x, y, 128, 128))
@@ -28,14 +24,22 @@ def drawblock(x, y):
 
 
 def newblock():
-    enumerate
+    options = []
+    for i in positions.items():
+        if 0 in i:
+            options.append(i[0])
+    coords = random.choice(options)
+    print(coords)
+    num = random.choice((2, 4))
 
 
 newblock()
+
+
 def main():
     while True:
         window.fill(constants.BG_COL)
-        drawblock(4, 2)
+        drawblock(1, 1, 10)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 quit()
@@ -43,7 +47,6 @@ def main():
         pygame.time.Clock().tick(constants.FPS)
 
 
-'''
 if __name__ == "__main__":
     pygame.init()
     window = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
@@ -51,4 +54,3 @@ if __name__ == "__main__":
     icon = pygame.image.load("imgs/2048_logo.png")
     pygame.display.set_icon(icon)
     main()
-'''
