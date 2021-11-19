@@ -1,5 +1,5 @@
 import pygame
-from pygame.locals import (K_w, K_a, K_s, K_d, KEYDOWN, QUIT)
+from pygame.locals import (K_w, K_a, K_s, K_d, K_ESCAPE, KEYDOWN, QUIT)
 import random
 import constants
 
@@ -48,6 +48,23 @@ def newblock():
     positions[coords] = num
 
 
+# merge blocks
+def up():
+    pass
+
+
+def left():
+    pass
+
+
+def down():
+    pass
+
+
+def right():
+    pass
+
+
 def main():
     while True:
         window.fill(constants.BG_COL)
@@ -61,15 +78,20 @@ def main():
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_w:
+                    up()
                     newblock()
                 elif event.key == K_a:
+                    left()
                     newblock()
                 elif event.key == K_s:
+                    down()
                     newblock()
                 elif event.key == K_d:
+                    right()
                     newblock()
-                else:
-                    pass
+                elif event.key == K_ESCAPE:
+                    pygame.quit()
+                    quit()
             elif event.type == QUIT:
                 pygame.quit()
                 quit()
