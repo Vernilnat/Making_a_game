@@ -10,12 +10,13 @@ positions = {
     (1, 3): 0, (2, 3): 0, (3, 2): 0, (4, 2): 0,
     (1, 4): 0, (2, 4): 0, (3, 1): 0, (4, 1): 0
 }
+gameisover = False
 
 
 def drawblock(x, y, num):
     x = (x - 1) * 128
     y = (y - 1) * 128
-    pygame.draw.rect(window, constants.BLUE, pygame.Rect(x, y, 128, 128))
+    pygame.draw.rect(window, constants.block_colour(num), pygame.Rect(x, y, 128, 128))
     text = font.render(str(num), True, constants.BLACK)
     text_rect = text.get_rect()
     text_rect.center = (x + 64, y + 64)
@@ -23,7 +24,12 @@ def drawblock(x, y, num):
 
 
 def game_over():
+    global gameisover
     game_over_text = font.render("Game Over!", True, constants.GAMEOVER_COL)
+    game_over_text_rect = game_over_text.get_rect()
+    game_over_text_rect.center = (constants.WIDTH // 2, constants.HEIGHT // 2)
+    window.blit(game_over_text, game_over_text_rect)
+    gameisover = True
 
 
 def newblock():
@@ -34,6 +40,7 @@ def newblock():
             options.append(i[0])
     if not options:
         game_over()
+        return False
     coords = random.choice(options)
     num = random.choice((2, 4))
     drawblock(*coords, num)
@@ -44,9 +51,12 @@ def newblock():
 def main():
     while True:
         window.fill(constants.BG_COL)
+
         for block in positions:
-            if positions[block] is not 0:
+            if positions[block] != 0:
                 drawblock(*block, positions[block])
+        if gameisover:
+            game_over()
 
         for event in pygame.event.get():
             if event.type == KEYDOWN:
