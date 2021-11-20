@@ -16,7 +16,7 @@ def block_colour(num):
     elif num == 16:
         return 255, 100, 100
     else:
-        print("Number in block_colour(), incorrect")
+        return 0, 0, 0
 
 
 my_font = "Calibri"

@@ -73,6 +73,10 @@ def right():
 
 
 def main():
+    # Setup:
+    newblock()
+    newblock()
+    # Spel-loop
     while True:
         window.fill(c.BG_COL)
         for row in range(4):
