@@ -1,23 +1,27 @@
 import pygame
 from pygame.locals import (K_w, K_a, K_s, K_d, K_ESCAPE, KEYDOWN, QUIT)
 import random
-import constants
+import constants as c
 
 # Definiera en lista som har koll på spel-positionen
+'''
 positions = {
-    (1, 1): 0, (2, 1): 0, (3, 4): 0, (4, 4): 0,
-    (1, 2): 0, (2, 2): 0, (3, 3): 0, (4, 3): 0,
-    (1, 3): 0, (2, 3): 0, (3, 2): 0, (4, 2): 0,
-    (1, 4): 0, (2, 4): 0, (3, 1): 0, (4, 1): 0
+    (1, 1): 0, (2, 1): 0, (3, 1): 0, (4, 1): 0,
+    (1, 2): 0, (2, 2): 0, (3, 2): 0, (4, 2): 0,
+    (1, 3): 0, (2, 3): 0, (3, 3): 0, (4, 3): 0,
+    (1, 4): 0, (2, 4): 0, (3, 4): 0, (4, 4): 0
 }
+'''
+positions = [[0] * 4 for i in range(4)]
+
 gameisover = False
 
 
 def drawblock(x, y, num):
-    x = (x - 1) * 128
-    y = (y - 1) * 128
-    pygame.draw.rect(window, constants.block_colour(num), pygame.Rect(x, y, 128, 128))
-    text = font.render(str(num), True, constants.BLACK)
+    x = x * 128
+    y = y * 128
+    pygame.draw.rect(window, c.block_colour(num), pygame.Rect(x, y, 128, 128))
+    text = font.render(str(num), True, c.BLACK)
     text_rect = text.get_rect()
     text_rect.center = (x + 64, y + 64)
     window.blit(text, text_rect)
@@ -25,9 +29,9 @@ def drawblock(x, y, num):
 
 def game_over():
     global gameisover
-    game_over_text = font.render("Game Over!", True, constants.GAMEOVER_COL)
+    game_over_text = font.render("Game Over!", True, c.GAMEOVER_COL)
     game_over_text_rect = game_over_text.get_rect()
-    game_over_text_rect.center = (constants.WIDTH // 2, constants.HEIGHT // 2)
+    game_over_text_rect.center = (c.WIDTH // 2, c.HEIGHT // 2)
     window.blit(game_over_text, game_over_text_rect)
     gameisover = True
 
@@ -67,7 +71,7 @@ def right():
 
 def main():
     while True:
-        window.fill(constants.BG_COL)
+        window.fill(c.BG_COL)
 
         for block in positions:
             if positions[block] != 0:
@@ -97,13 +101,13 @@ def main():
                 quit()
 
         pygame.display.update()
-        pygame.time.Clock().tick(constants.FPS)
+        pygame.time.Clock().tick(c.FPS)
 
 
 if __name__ == "__main__":
     pygame.init()
-    font = pygame.font.SysFont(constants.my_font, 42)
-    window = pygame.display.set_mode((constants.WIDTH, constants.HEIGHT))
+    font = pygame.font.SysFont(c.my_font, 42)
+    window = pygame.display.set_mode((c.WIDTH, c.HEIGHT))
     pygame.display.set_caption("2048 av Verner Lindskog")
     icon = pygame.image.load("imgs/2048_logo.png")
     pygame.display.set_icon(icon)

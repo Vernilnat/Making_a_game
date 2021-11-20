@@ -1,4 +1,3 @@
-import self as self
 
 WIDTH, HEIGHT = 512, 512
 BG_COL = (128, 152, 183)
