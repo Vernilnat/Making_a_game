@@ -16,7 +16,7 @@ def drawblock(x, y, num):
 def main():
     while True:
         window.fill(c.BG_COL)
-        drawblock(1, 3, 16)
+        drawblock(3, 1, 16)
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()

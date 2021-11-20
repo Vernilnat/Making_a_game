@@ -35,15 +35,14 @@ def newblock():
         for column, value in enumerate(positions[row]):
             if value == 0:
                 options.append((column, row))
-    if not options:
-        game_over()
-        return False
+    # if not options:
+    #     game_over()
+    #     return False
     coords = random.choice(options)
-    print(coords)
     num = random.choice((2, 4))
-    drawblock(*coords, num)
+    # drawblock(*coords, num)
     # Lägg till värdet i positions-listan
-    positions[coords[0]][coords[1]] = num
+    positions[coords[1]][coords[0]] = num
 
 
 # merge blocks
@@ -52,7 +51,17 @@ def up():
 
 
 def left():
-    pass
+    # Börja med att samla alla tal till vänster
+    for row in range(4):
+        move_list = []
+        for tile in positions[row]:
+            if tile != 0:
+                move_list.append(tile)
+        for i in range(4 - len(move_list)):
+            move_list.append(0)
+        positions[row] = move_list
+
+    newblock()
 
 
 def down():
@@ -66,14 +75,11 @@ def right():
 def main():
     while True:
         window.fill(c.BG_COL)
-        x, y = 0, 0
-        for row in positions:
-            for column in row:
-                if column != 0:
-                    drawblock(x, y, column)
-                x += 1
-            y += 1
-            x = 0
+        for row in range(4):
+            for column, value in enumerate(positions[row]):
+                if value != 0:
+                    drawblock(column, row, value)
+
         if gameisover:
             game_over()
 
@@ -82,7 +88,7 @@ def main():
                 if event.key == K_w:
                     newblock()
                 elif event.key == K_a:
-                    newblock()
+                    left()
                 elif event.key == K_s:
                     newblock()
                 elif event.key == K_d:
