@@ -35,9 +35,9 @@ def newblock():
         for column, value in enumerate(positions[row]):
             if value == 0:
                 options.append((column, row))
-    # if not options:
-    #     game_over()
-    #     return False
+    if not options:
+        game_over()
+        return False
     coords = random.choice(options)
     num = random.choice((2, 4))
     # drawblock(*coords, num)
@@ -45,27 +45,53 @@ def newblock():
     positions[coords[1]][coords[0]] = num
 
 
-# merge blocks
+# en sätta ihop funktion, resten av funktionerna justerar listorna så att merge()-funktionen fungerar på rätt sätt för
+# de olika situationerna
+def merge(merge_list):
+    # Samla alla tal till vänster i "nested lists"
+    for row in range(4):
+        merge_list[row] = [num for num in merge_list[row] if num != 0] + [0] * merge_list[row].count(0)
+        # Addera ihop tal ifall det behövs
+        prev_num = None
+        for column, tile in enumerate(merge_list[row]):
+            if tile == 0:
+                break
+            elif tile == prev_num:
+                new_num = tile * 2
+                merge_list[row][column - 1] = new_num
+                merge_list[row][column] = 0
+                prev_num = None
+            else:
+                prev_num = tile
+        # Sortera återigen listorna åt vänster efter att talen adderats
+        merge_list[row] = [num for num in merge_list[row] if num != 0] + [0] * merge_list[row].count(0)
+
+
 def up():
-    pass
+    up_positions = []
+    for i in range(4):
+        up_positions.append([positions[j][i] for j in range(4)])
+    merge(up_positions)
+    positions.clear()
+    for i in range(4):
+        positions.append([up_positions[j][i] for j in range(4)])
+    newblock()
 
 
 def left():
-    # Börja med att samla alla tal till vänster
-    for row in range(4):
-        move_list = []
-        for tile in positions[row]:
-            if tile != 0:
-                move_list.append(tile)
-        for i in range(4 - len(move_list)):
-            move_list.append(0)
-        positions[row] = move_list
-
+    merge(positions)
     newblock()
 
 
 def down():
-    pass
+    down_positions = []
+    for i in range(4):
+        down_positions.append([positions[j][i] for j in range(-1, -5, -1)])
+    merge(down_positions)
+    positions.clear()
+    for i in range(-1, -5, -1):
+        positions.append([down_positions[j][i] for j in range(4)])
+    newblock()
 
 
 def right():
@@ -90,11 +116,11 @@ def main():
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_w:
-                    newblock()
+                    up()
                 elif event.key == K_a:
                     left()
                 elif event.key == K_s:
-                    newblock()
+                    down()
                 elif event.key == K_d:
                     newblock()
                 elif event.key == K_ESCAPE:

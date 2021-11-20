@@ -15,6 +15,8 @@ def block_colour(num):
         return 255, 150, 150
     elif num == 16:
         return 255, 100, 100
+    elif num == 32:
+        return 255, 50, 50
     else:
         return 0, 0, 0
 
