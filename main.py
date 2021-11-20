@@ -4,14 +4,6 @@ import random
 import constants as c
 
 # Definiera en lista som har koll på spel-positionen
-'''
-positions = {
-    (1, 1): 0, (2, 1): 0, (3, 1): 0, (4, 1): 0,
-    (1, 2): 0, (2, 2): 0, (3, 2): 0, (4, 2): 0,
-    (1, 3): 0, (2, 3): 0, (3, 3): 0, (4, 3): 0,
-    (1, 4): 0, (2, 4): 0, (3, 4): 0, (4, 4): 0
-}
-'''
 positions = [[0] * 4 for i in range(4)]
 
 gameisover = False
@@ -39,17 +31,19 @@ def game_over():
 def newblock():
     # Kollar lediga rutor
     options = []
-    for i in positions.items():
-        if 0 in i:
-            options.append(i[0])
+    for row in range(4):
+        for column, value in enumerate(positions[row]):
+            if value == 0:
+                options.append((column, row))
     if not options:
         game_over()
         return False
     coords = random.choice(options)
+    print(coords)
     num = random.choice((2, 4))
     drawblock(*coords, num)
     # Lägg till värdet i positions-listan
-    positions[coords] = num
+    positions[coords[0]][coords[1]] = num
 
 
 # merge blocks
@@ -72,26 +66,26 @@ def right():
 def main():
     while True:
         window.fill(c.BG_COL)
-
-        for block in positions:
-            if positions[block] != 0:
-                drawblock(*block, positions[block])
+        x, y = 0, 0
+        for row in positions:
+            for column in row:
+                if column != 0:
+                    drawblock(x, y, column)
+                x += 1
+            y += 1
+            x = 0
         if gameisover:
             game_over()
 
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_w:
-                    up()
                     newblock()
                 elif event.key == K_a:
-                    left()
                     newblock()
                 elif event.key == K_s:
-                    down()
                     newblock()
                 elif event.key == K_d:
-                    right()
                     newblock()
                 elif event.key == K_ESCAPE:
                     pygame.quit()
