@@ -7,6 +7,7 @@ import constants as c
 positions = [[0] * 4 for i in range(4)]
 
 gameisover = False
+gameiswon = False
 moved = False
 
 
@@ -30,7 +31,12 @@ def game_over():
 
 
 def winscreen():
-    print("You won!")
+    global gameiswon
+    win_text = font.render("You win!", True, c.BLACK)
+    win_text_rect = win_text.get_rect()
+    win_text_rect.center = (c.WIDTH // 2, c.HEIGHT // 2)
+    window.blit(win_text, win_text_rect)
+    gameiswon = True
 
 
 def wincheck(win_tile):
@@ -47,14 +53,19 @@ def newblock():
         for column, value in enumerate(positions[row]):
             if value == 0:
                 options.append((column, row))
-#    if not options:
-#        game_over()
-#        return False
     coords = random.choice(options)
     num = random.choice((2, 4))
     # drawblock(*coords, num)
     # Lägg till värdet i positions-listan
     positions[coords[1]][coords[0]] = num
+    # Kolla om användaren har förlorat, kolla ifall det finns några möjliga drag
+    if len(options) < 2:
+        if not mergecheck(positions):
+            rotate_positions = []
+            for i in range(4):
+                rotate_positions.append([positions[j][i] for j in range(4)])
+            if not mergecheck(rotate_positions):
+                game_over()
 
 
 # en sätta ihop funktion, resten av funktionerna justerar listorna så att merge()-funktionen fungerar på rätt sätt för
@@ -88,6 +99,21 @@ def merge(merge_list):
         wincheck(c.win_tile)
 
 
+def mergecheck(grid):
+    prev_num = None
+    can_merge = False
+    for i in grid:
+        if can_merge:
+            break
+        for j in i:
+            if j == prev_num:
+                can_merge = True
+                break
+            prev_num = j
+        prev_num = None
+    return can_merge
+
+
 def up():
     up_positions = []
     for i in range(4):
@@ -96,14 +122,10 @@ def up():
     positions.clear()
     for i in range(4):
         positions.append([up_positions[j][i] for j in range(4)])
-    if moved:
-        newblock()
 
 
 def left():
     merge(positions)
-    if moved:
-        newblock()
 
 
 def down():
@@ -114,8 +136,6 @@ def down():
     positions.clear()
     for i in range(-1, -5, -1):
         positions.append([down_positions[j][i] for j in range(4)])
-    if moved:
-        newblock()
 
 
 def right():
@@ -126,8 +146,6 @@ def right():
     positions.clear()
     for i in range(4):
         positions.append(right_positions[i][::-1])
-    if moved:
-        newblock()
 
 
 def main():
@@ -141,20 +159,28 @@ def main():
             for column, value in enumerate(positions[row]):
                 if value != 0:
                     drawblock(column, row, value)
-
         if gameisover:
             game_over()
-
+        elif gameiswon:
+            winscreen()
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_w:
                     up()
+                    if moved:
+                        newblock()
                 elif event.key == K_a:
                     left()
+                    if moved:
+                        newblock()
                 elif event.key == K_s:
                     down()
+                    if moved:
+                        newblock()
                 elif event.key == K_d:
                     right()
+                    if moved:
+                        newblock()
                 elif event.key == K_ESCAPE:
                     pygame.quit()
                     quit()

@@ -1,35 +1,43 @@
-import pygame
-import constants as c
-from pygame.locals import (K_w, K_a, K_s, K_d, K_ESCAPE, KEYDOWN, QUIT)
+prev_num = None
+can_merge = False
 
 
-def drawblock(x, y, num):
-    x = x * 128
-    y = y * 128
-    pygame.draw.rect(window, c.block_colour(num), pygame.Rect(x, y, 128, 128))
-    text = font.render(str(num), True, c.BLACK)
-    text_rect = text.get_rect()
-    text_rect.center = (x + 64, y + 64)
-    window.blit(text, text_rect)
+def mergecheck(grid):
+    global prev_num
+    global can_merge
+    for i in grid:
+        if can_merge:
+            break
+        for j in i:
+            if j == prev_num:
+                print(prev_num)
+                print(j)
+                can_merge = True
+                break
+            prev_num = j
+        prev_num = None
+    return can_merge
 
 
-def main():
-    while True:
-        window.fill(c.BG_COL)
-        drawblock(3, 1, 16)
-        for event in pygame.event.get():
-            if event.type == QUIT:
-                pygame.quit()
-                quit()
-        pygame.display.update()
-        pygame.time.Clock().tick(60)
+for lol in range(1):
+    positions = [
+        [8, 4, 8, 2],
+        [64, 1, 512, 9],
+        [32, 2, 9, 4],
+        [8, 4, 2, 4]
+    ]
+    
+    options = []
+    if not options:
+        if not mergecheck(positions):
+            print("HELLO")
+            rotate_positions = []
+            for i in range(4):
+                rotate_positions.append([positions[j][i] for j in range(4)])
+            print(rotate_positions)
+            if not mergecheck(rotate_positions):
+                print("game over")
+            else:
+                print("." + str(mergecheck(rotate_positions)))
 
-
-if __name__ == "__main__":
-    pygame.init()
-    font = pygame.font.SysFont(c.my_font, 42)
-    window = pygame.display.set_mode((c.WIDTH, c.HEIGHT))
-    pygame.display.set_caption("2048 av Verner Lindskog")
-    icon = pygame.image.load("imgs/2048_logo.png")
-    pygame.display.set_icon(icon)
-    main()
+    
