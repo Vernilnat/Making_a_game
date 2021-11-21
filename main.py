@@ -7,6 +7,7 @@ import constants as c
 positions = [[0] * 4 for i in range(4)]
 
 gameisover = False
+moved = False
 
 
 def drawblock(x, y, num):
@@ -48,6 +49,9 @@ def newblock():
 # en sätta ihop funktion, resten av funktionerna justerar listorna så att merge()-funktionen fungerar på rätt sätt för
 # de olika situationerna
 def merge(merge_list):
+    global moved
+    # Spara listan för att kolla ifall något rör sig. Om inget rör sig ska inget nytt block skapas.
+    original_list = merge_list[:]
     # Samla alla tal till vänster i "nested lists"
     for row in range(4):
         merge_list[row] = [num for num in merge_list[row] if num != 0] + [0] * merge_list[row].count(0)
@@ -65,6 +69,10 @@ def merge(merge_list):
                 prev_num = tile
         # Sortera återigen listorna åt vänster efter att talen adderats
         merge_list[row] = [num for num in merge_list[row] if num != 0] + [0] * merge_list[row].count(0)
+        if merge_list != original_list:
+            moved = True
+        else:
+            moved = False
 
 
 def up():
@@ -75,12 +83,14 @@ def up():
     positions.clear()
     for i in range(4):
         positions.append([up_positions[j][i] for j in range(4)])
-    newblock()
+    if moved:
+        newblock()
 
 
 def left():
     merge(positions)
-    newblock()
+    if moved:
+        newblock()
 
 
 def down():
@@ -91,11 +101,20 @@ def down():
     positions.clear()
     for i in range(-1, -5, -1):
         positions.append([down_positions[j][i] for j in range(4)])
-    newblock()
+    if moved:
+        newblock()
 
 
 def right():
-    pass
+    right_positions = []
+    for i in range(4):
+        right_positions.append(positions[i][::-1])
+    merge(right_positions)
+    positions.clear()
+    for i in range(4):
+        positions.append(right_positions[i][::-1])
+    if moved:
+        newblock()
 
 
 def main():
@@ -122,7 +141,7 @@ def main():
                 elif event.key == K_s:
                     down()
                 elif event.key == K_d:
-                    newblock()
+                    right()
                 elif event.key == K_ESCAPE:
                     pygame.quit()
                     quit()
