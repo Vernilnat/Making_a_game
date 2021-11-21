@@ -29,6 +29,17 @@ def game_over():
     gameisover = True
 
 
+def winscreen():
+    print("You won!")
+
+
+def wincheck(win_tile):
+    for row in positions:
+        for i in row:
+            if i == win_tile:
+                winscreen()
+
+
 def newblock():
     # Kollar lediga rutor
     options = []
@@ -36,9 +47,9 @@ def newblock():
         for column, value in enumerate(positions[row]):
             if value == 0:
                 options.append((column, row))
-    if not options:
-        game_over()
-        return False
+#    if not options:
+#        game_over()
+#        return False
     coords = random.choice(options)
     num = random.choice((2, 4))
     # drawblock(*coords, num)
@@ -52,7 +63,7 @@ def merge(merge_list):
     global moved
     # Spara listan för att kolla ifall något rör sig. Om inget rör sig ska inget nytt block skapas.
     original_list = merge_list[:]
-    # Samla alla tal till vänster i "nested lists"
+    # Samla alla tal till vänster i listorna
     for row in range(4):
         merge_list[row] = [num for num in merge_list[row] if num != 0] + [0] * merge_list[row].count(0)
         # Addera ihop tal ifall det behövs
@@ -69,10 +80,12 @@ def merge(merge_list):
                 prev_num = tile
         # Sortera återigen listorna åt vänster efter att talen adderats
         merge_list[row] = [num for num in merge_list[row] if num != 0] + [0] * merge_list[row].count(0)
-        if merge_list != original_list:
-            moved = True
-        else:
-            moved = False
+    if merge_list != original_list:
+        moved = True
+    else:
+        moved = False
+    if moved:
+        wincheck(c.win_tile)
 
 
 def up():
