@@ -35,5 +35,5 @@ def block_colour(num):
 
 my_font = "Calibri"
 FPS = 60
-win_tile = 256
+win_tile = 2048
 

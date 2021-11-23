@@ -1,11 +1,13 @@
 import pygame
-from pygame.locals import (K_w, K_a, K_s, K_d, K_ESCAPE, KEYDOWN, QUIT)
+from pygame.locals import (K_w, K_UP, K_a, K_LEFT, K_s, K_DOWN, K_d, K_RIGHT, K_ESCAPE, KEYDOWN, QUIT, K_RCTRL)
 import random
 import constants as c
+# ev. import json (for scores!)
 
 # Definiera en lista som har koll på spel-positionen
 positions = [[0] * 4 for i in range(4)]
 
+# Variabler som används i spel-loopen senare...
 gameisover = False
 gameiswon = False
 moved = False
@@ -46,26 +48,31 @@ def wincheck(win_tile):
                 winscreen()
 
 
-def newblock():
-    # Kollar lediga rutor
-    options = []
-    for row in range(4):
-        for column, value in enumerate(positions[row]):
-            if value == 0:
-                options.append((column, row))
-    coords = random.choice(options)
-    num = random.choice((2, 4))
-    # drawblock(*coords, num)
-    # Lägg till värdet i positions-listan
-    positions[coords[1]][coords[0]] = num
-    # Kolla om användaren har förlorat, kolla ifall det finns några möjliga drag
-    if len(options) < 2:
-        if not mergecheck(positions):
-            rotate_positions = []
-            for i in range(4):
-                rotate_positions.append([positions[j][i] for j in range(4)])
-            if not mergecheck(rotate_positions):
-                game_over()
+def newblock(rep=1):
+    # rep = antal repetitioner (till setup när man ska börja med 2 rutor)
+    # Kollar om du redan vunnit
+    wincheck(c.win_tile)
+
+    for i in range(rep):
+        # Kollar lediga rutor
+        options = []
+        for row in range(4):
+            for column, value in enumerate(positions[row]):
+                if value == 0:
+                    options.append((column, row))
+        coords = random.choice(options)
+        num = random.choice((2, 4))
+        # drawblock(*coords, num)
+        # Lägg till värdet i positions-listan
+        positions[coords[1]][coords[0]] = num
+        # Kolla om användaren har förlorat, kolla ifall det finns några möjliga drag
+        if len(options) < 2:
+            if not mergecheck(positions):
+                rotate_positions = []
+                for i in range(4):
+                    rotate_positions.append([positions[j][i] for j in range(4)])
+                if not mergecheck(rotate_positions):
+                    game_over()
 
 
 # en sätta ihop funktion, resten av funktionerna justerar listorna så att merge()-funktionen fungerar på rätt sätt för
@@ -95,8 +102,6 @@ def merge(merge_list):
         moved = True
     else:
         moved = False
-    if moved:
-        wincheck(c.win_tile)
 
 
 def mergecheck(grid):
@@ -148,6 +153,14 @@ def right():
         positions.append(right_positions[i][::-1])
 
 
+def restart():
+    global gameisover, gameiswon, positions
+    gameisover = False
+    gameiswon = False
+    positions = [[0] * 4 for i in range(4)]
+    newblock(2)
+
+
 def main():
     # Setup:
     newblock()
@@ -165,25 +178,27 @@ def main():
             winscreen()
         for event in pygame.event.get():
             if event.type == KEYDOWN:
-                if event.key == K_w:
+                if event.key == K_w or event.key == K_UP:
                     up()
                     if moved:
                         newblock()
-                elif event.key == K_a:
+                elif event.key == K_a or event.key == K_LEFT:
                     left()
                     if moved:
                         newblock()
-                elif event.key == K_s:
+                elif event.key == K_s or event.key == K_DOWN:
                     down()
                     if moved:
                         newblock()
-                elif event.key == K_d:
+                elif event.key == K_d or event.key == K_RIGHT:
                     right()
                     if moved:
                         newblock()
                 elif event.key == K_ESCAPE:
                     pygame.quit()
                     quit()
+                elif event.key == K_RCTRL:
+                    restart()
             elif event.type == QUIT:
                 pygame.quit()
                 quit()
