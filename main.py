@@ -2,6 +2,10 @@ import pygame
 from pygame.locals import (K_w, K_UP, K_a, K_LEFT, K_s, K_DOWN, K_d, K_RIGHT, K_ESCAPE, KEYDOWN, QUIT, K_RCTRL)
 import random
 import colours as c
+# TO DO LIST
+# Poäng!
+# meny!
+# slutmeny!
 
 
 # Definiera en lista som har koll på spel-positionen
