@@ -1,8 +1,8 @@
 import pygame
 from pygame.locals import (K_w, K_UP, K_a, K_LEFT, K_s, K_DOWN, K_d, K_RIGHT, K_ESCAPE, KEYDOWN, QUIT, K_RCTRL)
 import random
-import constants as c
-# ev. import json (for scores!)
+import colours as c
+
 
 # Definiera en lista som har koll på spel-positionen
 positions = [[0] * 4 for i in range(4)]
@@ -10,6 +10,7 @@ positions = [[0] * 4 for i in range(4)]
 # Variabler som används i spel-loopen senare...
 gameisover = False
 gameiswon = False
+gameiswon_menu = False
 moved = False
 
 
@@ -34,11 +35,13 @@ def game_over():
 
 def winscreen():
     global gameiswon
+    global gameiswon_menu
     win_text = font.render("You win!", True, c.BLACK)
     win_text_rect = win_text.get_rect()
     win_text_rect.center = (c.WIDTH // 2, c.HEIGHT // 2)
     window.blit(win_text, win_text_rect)
     gameiswon = True
+    gameiswon_menu = True
 
 
 def wincheck(win_tile):
@@ -159,6 +162,14 @@ def restart():
     gameiswon = False
     positions = [[0] * 4 for i in range(4)]
     newblock(2)
+
+
+def main_menu():
+    while True:
+        window.fill(c.BG_COL)
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                quit()
 
 
 def main():
