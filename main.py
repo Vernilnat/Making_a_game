@@ -3,7 +3,6 @@ from pygame.locals import (K_w, K_UP, K_a, K_LEFT, K_s, K_DOWN, K_d, K_RIGHT, K_
 import random
 import colours as c
 # TO DO LIST
-# Poäng!
 # meny!
 # slutmeny!
 
@@ -16,31 +15,35 @@ gameisover = False
 gameiswon = False
 gameiswon_menu = False
 moved = False
+score = 0
+
+
+def drawtext(font, text, text_col, center, surface, bg_col=None):
+    textobj = font.render(text, True, text_col, bg_col)
+    textrect = textobj.get_rect()
+    textrect.center = center
+    surface.blit(textobj, textrect)
 
 
 def drawblock(x, y, num):
     x = x * 128
     y = y * 128
     pygame.draw.rect(window, c.block_colour(num), pygame.Rect(x, y, 128, 128))
-    text = font.render(str(num), True, c.BLACK)
-    text_rect = text.get_rect()
-    text_rect.center = (x + 64, y + 64)
-    window.blit(text, text_rect)
+    drawtext(big_font, str(num), c.BLACK, (x + (c.WIDTH // 8), y + (c.HEIGHT // 8)), window)
 
 
 def game_over():
     global gameisover
-    game_over_text = font.render("Game Over!", True, c.GAMEOVER_COL)
-    game_over_text_rect = game_over_text.get_rect()
-    game_over_text_rect.center = (c.WIDTH // 2, c.HEIGHT // 2)
-    window.blit(game_over_text, game_over_text_rect)
+    drawtext(big_font, "Game Over!", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 4), window)
+    drawtext(small_font, "Press \"Right Control\" to play again", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 2), window)
+    drawtext(small_font, "Press \"Escape\" to quit the game", c.BLACK, (c.WIDTH // 2, 3 * (c.HEIGHT // 4)), window)
     gameisover = True
 
 
 def winscreen():
     global gameiswon
     global gameiswon_menu
-    win_text = font.render("You win!", True, c.BLACK)
+    win_text = big_font.render("You win!", True, c.BLACK)
     win_text_rect = win_text.get_rect()
     win_text_rect.center = (c.WIDTH // 2, c.HEIGHT // 2)
     window.blit(win_text, win_text_rect)
@@ -86,6 +89,7 @@ def newblock(rep=1):
 # de olika situationerna
 def merge(merge_list):
     global moved
+    global score
     # Spara listan för att kolla ifall något rör sig. Om inget rör sig ska inget nytt block skapas.
     original_list = merge_list[:]
     # Samla alla tal till vänster i listorna
@@ -101,6 +105,8 @@ def merge(merge_list):
                 merge_list[row][column - 1] = new_num
                 merge_list[row][column] = 0
                 prev_num = None
+                # poäng!
+                score += new_num
             else:
                 prev_num = tile
         # Sortera återigen listorna åt vänster efter att talen adderats
@@ -160,17 +166,30 @@ def right():
         positions.append(right_positions[i][::-1])
 
 
+def printscore():
+    global score
+    score_text = small_font.render(f"Score: {score}", True, c.BLACK)
+    window.blit(score_text, (0, 0))
+
+
 def restart():
-    global gameisover, gameiswon, positions
+    global gameisover, gameiswon, positions, score
     gameisover = False
     gameiswon = False
+    score = 0
     positions = [[0] * 4 for i in range(4)]
     newblock(2)
+
+
+def printbuttons():
+
+    _2048 = small_font.render("2048")
 
 
 def main_menu():
     while True:
         window.fill(c.BG_COL)
+        printbuttons()
         for event in pygame.event.get():
             if event.type == QUIT:
                 quit()
@@ -191,6 +210,7 @@ def main():
             game_over()
         elif gameiswon:
             winscreen()
+        printscore()
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_w or event.key == K_UP:
@@ -224,7 +244,8 @@ def main():
 
 if __name__ == "__main__":
     pygame.init()
-    font = pygame.font.SysFont(c.my_font, 42)
+    big_font = pygame.font.SysFont(c.my_font, 42)
+    small_font = pygame.font.SysFont(c.my_font, 20)
     window = pygame.display.set_mode((c.WIDTH, c.HEIGHT))
     pygame.display.set_caption("2048 av Verner Lindskog")
     icon = pygame.image.load("imgs/2048_logo.png")

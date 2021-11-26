@@ -1,43 +1,37 @@
-prev_num = None
-can_merge = False
+import pygame
+import colours as c
+from pygame.locals import QUIT
 
 
-def mergecheck(grid):
-    global prev_num
-    global can_merge
-    for i in grid:
-        if can_merge:
-            break
-        for j in i:
-            if j == prev_num:
-                print(prev_num)
-                print(j)
-                can_merge = True
-                break
-            prev_num = j
-        prev_num = None
-    return can_merge
+def printtext(text, text_col, bg_col=None):
+    textobj = font.render
 
 
-for lol in range(1):
-    positions = [
-        [8, 4, 8, 2],
-        [64, 1, 512, 9],
-        [32, 2, 9, 4],
-        [8, 4, 2, 4]
-    ]
-    
-    options = []
-    if not options:
-        if not mergecheck(positions):
-            print("HELLO")
-            rotate_positions = []
-            for i in range(4):
-                rotate_positions.append([positions[j][i] for j in range(4)])
-            print(rotate_positions)
-            if not mergecheck(rotate_positions):
-                print("game over")
-            else:
-                print("." + str(mergecheck(rotate_positions)))
+def printbuttons():
 
-    
+    _2048 = small_font.render(" 2048 ", True, c.BLACK, c.BLUE)
+    _2048_rect = _2048.get_rect()
+    _2048_rect.center = (c.WIDTH // 2, c.HEIGHT // 2)
+    window.blit(_2048, _2048_rect)
+
+
+def main_menu():
+    while True:
+        window.fill(c.BG_COL)
+        printbuttons()
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                quit()
+        pygame.display.update()
+        pygame.time.Clock().tick(c.FPS)
+
+
+if __name__ == "__main__":
+    pygame.init()
+    big_font = pygame.font.SysFont(c.my_font, 42)
+    small_font = pygame.font.SysFont(c.my_font, 20)
+    window = pygame.display.set_mode((c.WIDTH, c.HEIGHT))
+    pygame.display.set_caption("2048 av Verner Lindskog")
+    icon = pygame.image.load("imgs/2048_logo.png")
+    pygame.display.set_icon(icon)
+    main_menu()
