@@ -191,8 +191,12 @@ def main_menu():
         window.fill(c.BG_COL)
         printbuttons()
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == KEYDOWN:
+                if event.key == K_w or event.key == K_UP:
+                    pass
+            elif event.type == QUIT:
                 quit()
+        pygame.display.update()
 
 
 def main():
