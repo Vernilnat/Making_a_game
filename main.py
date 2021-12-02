@@ -2,6 +2,8 @@ import pygame
 from pygame.locals import (K_w, K_UP, K_a, K_LEFT, K_s, K_DOWN, K_d, K_RIGHT, K_ESCAPE, KEYDOWN, QUIT, K_RCTRL)
 import random
 import colours as c
+import json
+
 # TO DO LIST
 # meny!
 # slutmeny!
@@ -167,13 +169,23 @@ def right():
 
 
 def printscore():
+    # Nuvarande poäng:
     global score
     score_text = small_font.render(f"Score: {score}", True, c.BLACK)
     window.blit(score_text, (0, 0))
+    # Poängrekord:
+    highscore_text = small_font.render("Highscore: " + str(values["highscore"]), True, c.BLACK)
+    highscore_text_rect = highscore_text.get_rect()
+    highscore_text_rect.topright = (c.WIDTH, 0)
+    window.blit(highscore_text, highscore_text_rect)
 
 
 def restart():
     global gameisover, gameiswon, positions, score
+    if values["highscore"] < score:
+        values["highscore"] = score
+        thefile = open("constants.json", "w")
+        json.dump(values, thefile)
     gameisover = False
     gameiswon = False
     score = 0
@@ -182,7 +194,6 @@ def restart():
 
 
 def printbuttons():
-
     _2048 = small_font.render("2048")
 
 
@@ -247,6 +258,8 @@ def main():
 
 
 if __name__ == "__main__":
+    values = json.load(open("constants.json", "r"))
+
     pygame.init()
     big_font = pygame.font.SysFont(c.my_font, 42)
     small_font = pygame.font.SysFont(c.my_font, 20)
