@@ -36,19 +36,19 @@ def drawblock(x, y, num):
 
 def game_over():
     global gameisover
-    drawtext(big_font, "Game Over!", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 4), window)
-    drawtext(small_font, "Press \"Right Control\" to play again", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 2), window)
-    drawtext(small_font, "Press \"Escape\" to quit the game", c.BLACK, (c.WIDTH // 2, 3 * (c.HEIGHT // 4)), window)
+    drawtext(big_font, "Game Over!", c.GAMEOVER, (c.WIDTH // 2, c.HEIGHT // 4), window)
+    drawtext(small_font, "Press \"Right Control\" to play again", c.GAMEOVER, (c.WIDTH // 2, c.HEIGHT // 8 * 3), window)
+    drawtext(small_font, "Press \"m\" to exit to main menu", c.GAMEOVER, (c.WIDTH // 2, c.HEIGHT // 2), window)
+    drawtext(small_font, "Press \"Escape\" to quit the game", c.GAMEOVER, (c.WIDTH // 2, c.HEIGHT // 8 * 5), window)
+
     gameisover = True
 
 
 def winscreen():
     global gameiswon
     global gameiswon_menu
-    win_text = big_font.render("You win!", True, c.BLACK)
-    win_text_rect = win_text.get_rect()
-    win_text_rect.center = (c.WIDTH // 2, c.HEIGHT // 2)
-    window.blit(win_text, win_text_rect)
+    drawtext(big_font, "You win!", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 2), window)
+    drawtext(small_font, "To continue the game press \"alt\"", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 4 * 3), window)
     gameiswon = True
     gameiswon_menu = True
 
@@ -81,8 +81,8 @@ def newblock(rep=1):
         if len(options) < 2:
             if not mergecheck(positions):
                 rotate_positions = []
-                for i in range(4):
-                    rotate_positions.append([positions[j][i] for j in range(4)])
+                for row in range(4):
+                    rotate_positions.append([positions[j][row] for j in range(4)])
                 if not mergecheck(rotate_positions):
                     game_over()
 
@@ -194,7 +194,10 @@ def restart():
 
 
 def printbuttons():
-    _2048 = small_font.render("2048")
+    drawtext(big_font, "Choose difficulty: ", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 8 * 3), window, c.RED)
+    drawtext(small_font, "2048", c.BLACK, (c.WIDTH // 4, c.HEIGHT // 2), window, c.LIGHTBLUE)
+    drawtext(small_font, "1024", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 2), window, c.LIGHTBLUE)
+    drawtext(small_font, "512", c.BLACK, (c.WIDTH // 4 * 3, c.HEIGHT // 2), window, c.LIGHTBLUE)
 
 
 def main_menu():
@@ -204,7 +207,7 @@ def main_menu():
         for event in pygame.event.get():
             if event.type == KEYDOWN:
                 if event.key == K_w or event.key == K_UP:
-                    pass
+                    main()
             elif event.type == QUIT:
                 quit()
         pygame.display.update()
@@ -267,4 +270,4 @@ if __name__ == "__main__":
     pygame.display.set_caption("2048 av Verner Lindskog")
     icon = pygame.image.load("imgs/2048_logo.png")
     pygame.display.set_icon(icon)
-    main()
+    main_menu()

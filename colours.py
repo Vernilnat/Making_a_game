@@ -2,7 +2,10 @@
 WIDTH, HEIGHT = 512, 512
 BG_COL = (128, 152, 183)
 BLUE = (0, 0, 128)
+RED = (255, 0, 0)
+LIGHTBLUE = (68, 85, 90)
 BLACK = (0, 0, 0)
+GAMEOVER = (101, 67, 33)
 
 
 def block_colour(num):
@@ -34,5 +37,5 @@ def block_colour(num):
 
 my_font = "Calibri"
 FPS = 60
-win_tile = 2048
+win_tile = 256
 
