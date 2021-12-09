@@ -1,5 +1,6 @@
 import pygame
-from pygame.locals import (K_w, K_UP, K_a, K_LEFT, K_s, K_DOWN, K_d, K_RIGHT, K_ESCAPE, KEYDOWN, QUIT, K_RCTRL)
+from pygame.locals import (K_w, K_UP, K_a, K_LEFT, K_s, K_DOWN, K_d, K_m, K_RIGHT, K_ESCAPE, KEYDOWN, QUIT, K_RCTRL,
+                           MOUSEBUTTONDOWN)
 import random
 import colours as c
 import json
@@ -10,14 +11,19 @@ import json
 
 
 # Definiera en lista som har koll på spel-positionen
-positions = [[0] * 4 for i in range(4)]
+positions = []
 
 # Variabler som används i spel-loopen senare...
 gameisover = False
 gameiswon = False
 gameiswon_menu = False
 moved = False
+click = False
 score = 0
+
+
+def soundeffect():
+    pygame.mixer.Sound("audio/Quack Sound Effect.mp3").play()
 
 
 def drawtext(font, text, text_col, center, surface, bg_col=None):
@@ -25,6 +31,7 @@ def drawtext(font, text, text_col, center, surface, bg_col=None):
     textrect = textobj.get_rect()
     textrect.center = center
     surface.blit(textobj, textrect)
+    return textrect
 
 
 def drawblock(x, y, num):
@@ -36,10 +43,13 @@ def drawblock(x, y, num):
 
 def game_over():
     global gameisover
-    drawtext(big_font, "Game Over!", c.GAMEOVER, (c.WIDTH // 2, c.HEIGHT // 4), window)
-    drawtext(small_font, "Press \"Right Control\" to play again", c.GAMEOVER, (c.WIDTH // 2, c.HEIGHT // 8 * 3), window)
-    drawtext(small_font, "Press \"m\" to exit to main menu", c.GAMEOVER, (c.WIDTH // 2, c.HEIGHT // 2), window)
-    drawtext(small_font, "Press \"Escape\" to quit the game", c.GAMEOVER, (c.WIDTH // 2, c.HEIGHT // 8 * 5), window)
+    drawtext(big_font, "Game Over!", c.GAMEOVER, (c.WIDTH // 2, c.HEIGHT // 4 + c.HEIGHT // 16), window)
+    drawtext(small_font, "Press \"Right Control\" to play again", c.GAMEOVER, (c.WIDTH // 2, c.HEIGHT // 8 * 3 +
+                                                                               c.HEIGHT // 16), window)
+    drawtext(small_font, "Press \"m\" to exit to main menu", c.GAMEOVER, (c.WIDTH // 2, c.HEIGHT // 2 + c.HEIGHT // 16),
+             window)
+    drawtext(small_font, "Press \"Escape\" to quit the game", c.GAMEOVER, (c.WIDTH // 2, c.HEIGHT // 8 * 5 + c.HEIGHT
+                                                                           // 16), window)
 
     gameisover = True
 
@@ -117,6 +127,7 @@ def merge(merge_list):
         moved = True
     else:
         moved = False
+    # soundeffect()
 
 
 def mergecheck(grid):
@@ -195,26 +206,41 @@ def restart():
 
 def printbuttons():
     drawtext(big_font, "Choose difficulty: ", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 8 * 3), window, c.RED)
-    drawtext(small_font, "2048", c.BLACK, (c.WIDTH // 4, c.HEIGHT // 2), window, c.LIGHTBLUE)
-    drawtext(small_font, "1024", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 2), window, c.LIGHTBLUE)
-    drawtext(small_font, "512", c.BLACK, (c.WIDTH // 4 * 3, c.HEIGHT // 2), window, c.LIGHTBLUE)
+    _2048 = drawtext(small_font, "2048", c.BLACK, (c.WIDTH // 4, c.HEIGHT // 2), window, c.WHITE)
+    _1024 = drawtext(small_font, "1024", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 2), window, c.WHITE)
+    _512 = drawtext(small_font, "512", c.BLACK, (c.WIDTH // 4 * 3, c.HEIGHT // 2), window, c.WHITE)
+    play = drawtext(big_font, "Play", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 4 * 3), window, c.WHITE)
+    mx, my = pygame.mouse.get_pos()
+    if _2048.collidepoint((mx, my)) and click:
+        c.win_tile = 2048
+    elif _1024.collidepoint((mx, my)) and click:
+        c.win_tile = 1048
+    elif _512.collidepoint((mx, my)) and click:
+        c.win_tile = 512
+    elif play.collidepoint((mx, my)) and click:
+        main()
 
 
 def main_menu():
+    global click
+
     while True:
         window.fill(c.BG_COL)
         printbuttons()
+        click = False
         for event in pygame.event.get():
-            if event.type == KEYDOWN:
-                if event.key == K_w or event.key == K_UP:
-                    main()
+            if event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    click = True
             elif event.type == QUIT:
                 quit()
         pygame.display.update()
 
 
 def main():
+    global positions
     # Setup:
+    positions = [[0] * 4 for i in range(4)]
     newblock()
     newblock()
     # Spel-loop
@@ -252,6 +278,8 @@ def main():
                     quit()
                 elif event.key == K_RCTRL:
                     restart()
+                elif event.key == K_m:
+                    main_menu()
             elif event.type == QUIT:
                 pygame.quit()
                 quit()
@@ -262,7 +290,6 @@ def main():
 
 if __name__ == "__main__":
     values = json.load(open("constants.json", "r"))
-
     pygame.init()
     big_font = pygame.font.SysFont(c.my_font, 42)
     small_font = pygame.font.SysFont(c.my_font, 20)
