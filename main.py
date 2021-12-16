@@ -1,22 +1,17 @@
 import pygame
 from pygame.locals import (K_w, K_UP, K_a, K_LEFT, K_s, K_DOWN, K_d, K_m, K_RIGHT, K_ESCAPE, KEYDOWN, QUIT, K_RCTRL,
-                           MOUSEBUTTONDOWN)
+                           MOUSEBUTTONDOWN, K_LALT)
 import random
 import colours as c
 import json
-
-# TO DO LIST
-# meny!
-# slutmeny!
-
 
 # Definiera en lista som har koll på spel-positionen
 positions = []
 
 # Variabler som används i spel-loopen senare...
+buttonchosen = 1
 gameisover = False
 gameiswon = False
-gameiswon_menu = False
 moved = False
 click = False
 score = 0
@@ -37,7 +32,7 @@ def drawtext(font, text, text_col, center, surface, bg_col=None):
 def drawblock(x, y, num):
     x = x * 128
     y = y * 128
-    pygame.draw.rect(window, c.block_colour(num), pygame.Rect(x, y, 128, 128))
+    pygame.draw.rect(window, c.block_colour(num), pygame.Rect(x, y, 128, 128), border_radius=20)
     drawtext(big_font, str(num), c.BLACK, (x + (c.WIDTH // 8), y + (c.HEIGHT // 8)), window)
 
 
@@ -56,11 +51,9 @@ def game_over():
 
 def winscreen():
     global gameiswon
-    global gameiswon_menu
     drawtext(big_font, "You win!", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 2), window)
     drawtext(small_font, "To continue the game press \"alt\"", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 4 * 3), window)
     gameiswon = True
-    gameiswon_menu = True
 
 
 def wincheck(win_tile):
@@ -204,20 +197,57 @@ def restart():
     newblock(2)
 
 
+class Button:
+    def __init__(self, text, font, color, width, height, coords):
+        self.x, self.y = coords
+        self.color = color
+
+        self.rect = pygame.Rect(self.x - width // 2, self.y - height // 2, width, height)
+        self.text_surface = font.render(text, True, c.BLACK)
+        self.text_rect = self.text_surface.get_rect(center=self.rect.center)
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
+        surface.blit(self.text_surface, self.text_rect)
+        return self.click_check()
+
+    def click_check(self):
+        mx, my = pygame.mouse.get_pos()
+        if self.rect.collidepoint(mx, my):
+            # Kolla ifall vänster musknapp är klickad
+            if pygame.mouse.get_pressed(3)[0]:
+                return True
+
+
 def printbuttons():
+    global buttonchosen
+    _2048_col = _1024_col = _512_col = c.WHITE
+    if buttonchosen == 1:
+        _2048_col = c.GREEN
+    elif buttonchosen == 2:
+        _1024_col = c.GREEN
+    elif buttonchosen == 3:
+        _512_col = c.GREEN
     drawtext(big_font, "Choose difficulty: ", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 8 * 3), window, c.RED)
-    _2048 = drawtext(small_font, "2048", c.BLACK, (c.WIDTH // 4, c.HEIGHT // 2), window, c.WHITE)
-    _1024 = drawtext(small_font, "1024", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 2), window, c.WHITE)
-    _512 = drawtext(small_font, "512", c.BLACK, (c.WIDTH // 4 * 3, c.HEIGHT // 2), window, c.WHITE)
-    play = drawtext(big_font, "Play", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 4 * 3), window, c.WHITE)
-    mx, my = pygame.mouse.get_pos()
-    if _2048.collidepoint((mx, my)) and click:
+
+    _2048 = Button("2048", small_font, _2048_col, c.WIDTH // 8, c.HEIGHT // 16, (c.WIDTH // 4, c.HEIGHT // 2))
+    _2048.draw(window)
+    _1024 = Button("1024", small_font, _1024_col, c.WIDTH // 8, c.HEIGHT // 16, (c.WIDTH // 2, c.HEIGHT // 2))
+    _1024.draw(window)
+    _512 = Button("512", small_font, _512_col, c.WIDTH // 8, c.HEIGHT // 16, (c.WIDTH // 4 * 3, c.HEIGHT // 2))
+    _512.draw(window)
+    play = Button("Play", big_font, c.PLAY_BUTTON_COL, c.WIDTH // 4, c.HEIGHT // 8, (c.WIDTH // 2, c.HEIGHT // 4 * 3))
+    play.draw(window)
+    if _2048.click_check():
+        buttonchosen = 1
         c.win_tile = 2048
-    elif _1024.collidepoint((mx, my)) and click:
-        c.win_tile = 1048
-    elif _512.collidepoint((mx, my)) and click:
+    elif _1024.click_check():
+        buttonchosen = 2
+        c.win_tile = 1024
+    elif _512.click_check():
+        buttonchosen = 3
         c.win_tile = 512
-    elif play.collidepoint((mx, my)) and click:
+    elif play.click_check():
         main()
 
 
@@ -233,14 +263,14 @@ def main_menu():
                 if event.button == 1:
                     click = True
             elif event.type == QUIT:
-                quit()
+                pygame.quit()
         pygame.display.update()
 
 
 def main():
-    global positions
+    global positions, gameiswon, gameisover
     # Setup:
-    positions = [[0] * 4 for i in range(4)]
+    positions = [[0] * 4 for row in range(4)]
     newblock()
     newblock()
     # Spel-loop
@@ -279,10 +309,15 @@ def main():
                 elif event.key == K_RCTRL:
                     restart()
                 elif event.key == K_m:
+                    # Ta bort slutskärmar och gå till huvudmeny
+                    gameisover = False
+                    gameiswon = False
                     main_menu()
+                elif event.key == K_LALT:
+                    # stoppa slutskärmen
+                    gameiswon = False
             elif event.type == QUIT:
                 pygame.quit()
-                quit()
 
         pygame.display.update()
         pygame.time.Clock().tick(c.FPS)

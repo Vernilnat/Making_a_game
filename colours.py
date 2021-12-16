@@ -1,4 +1,3 @@
-
 WIDTH, HEIGHT = 512, 512
 BG_COL = (128, 152, 183)
 BLUE = (0, 0, 128)
@@ -7,6 +6,8 @@ LIGHTBLUE = (68, 85, 90)
 BLACK = (0, 0, 0)
 GAMEOVER = (101, 67, 33)
 WHITE = (255, 255, 255)
+PLAY_BUTTON_COL = (206, 99, 99)
+GREEN = (0, 255, 0)
 
 
 def block_colour(num):
