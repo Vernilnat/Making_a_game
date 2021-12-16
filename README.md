@@ -1,2 +1,3 @@
 # Making_a_game
-optional
+hello!
+game in main :)
