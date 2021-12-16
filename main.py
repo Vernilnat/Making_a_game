@@ -51,6 +51,7 @@ def game_over():
 
 def winscreen():
     global gameiswon
+    soundeffect()
     drawtext(big_font, "You win!", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 2), window)
     drawtext(small_font, "To continue the game press \"alt\"", c.BLACK, (c.WIDTH // 2, c.HEIGHT // 4 * 3), window)
     gameiswon = True
