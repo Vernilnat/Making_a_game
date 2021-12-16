@@ -18,7 +18,7 @@ score = 0
 
 
 def soundeffect():
-    pygame.mixer.Sound("audio/Quack Sound Effect.mp3").play()
+    pygame.mixer.Sound("audio/Nice_sound_effect.mp3").play()
 
 
 def drawtext(font, text, text_col, center, surface, bg_col=None):
@@ -327,6 +327,7 @@ def main():
 if __name__ == "__main__":
     values = json.load(open("constants.json", "r"))
     pygame.init()
+    pygame.mixer.init()
     big_font = pygame.font.SysFont(c.my_font, 42)
     small_font = pygame.font.SysFont(c.my_font, 20)
     window = pygame.display.set_mode((c.WIDTH, c.HEIGHT))
