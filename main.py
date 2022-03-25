@@ -8,10 +8,11 @@ import json
 # Definiera en lista som har koll på spel-positionen
 positions = []
 
-# Variabler som används i spel-loopen senare...
+# Variabler som används lite varsom....
 buttonchosen = 1
 gameisover = False
 gameiswon = False
+winscreen_on = True
 moved = False
 click = False
 score = 0
@@ -58,10 +59,12 @@ def winscreen():
 
 
 def wincheck(win_tile):
+    global winscreen_on
     for row in positions:
         for i in row:
             if i == win_tile:
-                winscreen()
+                if winscreen_on:
+                    winscreen()
 
 
 def newblock(rep=1):
@@ -269,7 +272,7 @@ def main_menu():
 
 
 def main():
-    global positions, gameiswon, gameisover
+    global positions, gameiswon, gameisover, winscreen_on
     # Setup:
     positions = [[0] * 4 for row in range(4)]
     newblock()
@@ -284,7 +287,8 @@ def main():
         if gameisover:
             game_over()
         elif gameiswon:
-            winscreen()
+            if winscreen_on:
+                winscreen()
         printscore()
         for event in pygame.event.get():
             if event.type == KEYDOWN:
@@ -316,7 +320,7 @@ def main():
                     main_menu()
                 elif event.key == K_LALT:
                     # stoppa slutskärmen
-                    gameiswon = False
+                    winscreen_on = False
             elif event.type == QUIT:
                 pygame.quit()
 
